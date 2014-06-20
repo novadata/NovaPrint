@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:view="com.nova.print.view.*"
+			   minWidth="955" minHeight="600" creationComplete="init()">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.nova.print.control.NovaDataGrid;
+			import com.nova.print.map.DataMap;
+			import com.nova.print.map.FoldDataGridMap;
+			import com.nova.print.map.LayoutMap;
+			import com.nova.print.map.PrintDataMap;
+			import com.nova.print.util.SetupInfo;
+			import com.nova.print.view.Page;
+			import com.nova.print.view.Work;
+			
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.graphics.ImageSnapshot;
+			
+			private var work:Work=null;
+		 	[Embed(source="assets/font/SIMSUN.TTC", fontFamily="SONG", mimeType="application/x-font",embedAsCFF= "false")]
+			public var SONG:Class;   
+			private function init():void
+			{
+				//getLayout(layoutXml);
+				ExternalInterface.addCallback("getLayout",getLayout);
+				ExternalInterface.addCallback("getData",getData);
+				ExternalInterface.addCallback("getProperties",getProperties);
+				ExternalInterface.call("creationComplete","");
+			}
+			/** 
+			 * 打印来自设计局设计的mxml页面  保存所有的界面xml
+			 *   */
+			private function getLayout(_designerXml:String):void
+			{
+				var xml:XML=new XML(_designerXml);
+				LayoutMap.getSimple().setLayout(xml);
+				//getData(dataXml.toXMLString());
+			}
+			/**
+			 * 获取打印数据
+			 *   */
+			private function getData(_printData:String):void
+			{
+				var xml:XML=new XML(_printData);
+				DataMap.getSimple().setData(xml);
+				//getProperties(xml);
+			}
+			private function getProperties(_properties:String):void
+			{
+				if(_properties!="")
+				{
+					SetupInfo.getInstance().getProperties(new XML(_properties));
+				}
+				else
+				{
+					SetupInfo.getInstance().gotoPropertiesDefault();
+				}
+				work=new Work();
+				this.addElement(work);
+			}
+		]]>
+	</fx:Script>
+
+</s:Application>
